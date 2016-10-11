@@ -11,7 +11,6 @@ public class Cart {
 		this.cartId = cartId;
 		this.lineItems = new ArrayList<LineItem> ();
 	}
-	
 	public int getCartId() {
 		return this.cartId;
 	}
