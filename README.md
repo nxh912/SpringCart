@@ -5,7 +5,10 @@
 ### loading JSON file (example: http://rest-service.guides.spring.io/greeting) ###
 
 ```javascript
-      **$.support.cors = true;**
+      /**********/
+      $.support.cors = true;
+      /**********/
+      
 			$.ajax({
       
 				url: "http://rest-service.guides.spring.io/greeting"
