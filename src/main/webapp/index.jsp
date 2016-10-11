@@ -1,5 +1,5 @@
+
 <!DOCTYPE html>
-<!-- Sample Bootstrap 3 page -->
 <html>
 <head>
   <title>Bootstrap Example</title>
@@ -136,25 +136,45 @@ function createCORSRequest(method, url) {
 }
 
 function LoadedFuntion() {
-  var url = 'https://jsonplaceholder.typicode.com/posts/1';
-  url = "http://ctssgpdt-031:8080/GETITEMS";
+	
+	$.support.cors = true;
+	$.ajax({
+		//url: "http://rest-service.guides.spring.io/greeting"
+		url: "http://ctssgpdt-031:8080/SpringCart/product/" 
+	
+	}).then(function(data) {
+		alert( "DATA : " + JSON.stringify(data) );
+		
+		jsonCallback( static_result );
+		//jsonCallback( data );
+		
+		successful = true;
+	   
+	}).then(function (data) {
+		if(typeof console === "undefined") {
+			;
+		} else {
+			console.log("done! " + data);
+		}
+	}
+	);
 
-  var xhr = createCORSRequest('GET', url);
-  if (!xhr) {
-    alert("CORS not supported.");
-    throw new Error('CORS not supported');
-  }
-  if(xhr) {    
-    xhr.open('GET', url, true);
-    xhr.onreadystatechange = function () {
-        if(xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-          console.log(xhr.responseText);
-          alert(xhr.responseText);
-        }
-    };
-
-    xhr.send(); 
-  }
+	var xhr = createCORSRequest('GET', url);
+	if (!xhr) {
+		alert("CORS not supported.");
+		throw new Error('CORS not supported');
+	}
+	if(xhr) {    
+		xhr.open('GET', url, true);
+		xhr.onreadystatechange = function () {
+		    if(xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+		      console.log(xhr.responseText);
+		      alert(xhr.responseText);
+		    }
+		};
+		
+		xhr.send(); 
+	}
 }
 
 </script>
