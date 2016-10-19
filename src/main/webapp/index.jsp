@@ -22,7 +22,7 @@
 		</p>
 		
 		<p>
-			<a href="Bootstrap_NL.jsp">Cart (Drag and Drop Strap)</a>
+			<a href="Bootstrap_NL.jsp">Cart (Drag and Drop BootStrap JS)</a>
 		</p>
 	</body>
 </html>
