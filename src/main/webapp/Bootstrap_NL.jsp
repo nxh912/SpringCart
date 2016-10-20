@@ -1,5 +1,4 @@
 <!--  JSON: /SpringCart/product/ -->
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -9,6 +8,68 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+	<script>
+	// using Cross-Origin Resource Sharing (CORS) 
+function dragstart_handler(ev) {
+  //ev.currentTarget.style.border = "dashed";
+
+  var id = document.getElementById('cartIcon');
+  id.style.border = '5px dotted yellow'; 
+
+  //ev.effectAllowed = "copyMove";
+}
+
+function dragover_handler(ev) {
+  ev.currentTarget.style.background = "lightblue";
+  ev.preventDefault();
+}
+
+function drop_handler(ev) {
+  ev.preventDefault();
+}
+
+function dragend_handler(ev) {
+	console.log("... dragend_handler...");
+
+	var id = document.getElementById('cartIcon');
+	id.style.border = '5px dotted #333333'; 
+
+    //ev.target.style.border = "solid black";
+}
+
+
+	function handler( data )  {
+	    console.log(data.type);
+	}
+
+	function createCORSRequest(method, url) {
+	  var xhr = new XMLHttpRequest();
+	  if ("withCredentials" in xhr) {
+
+	    // Check if the XMLHttpRequest object has a "withCredentials" property.
+	    // "withCredentials" only exists on XMLHTTPRequest2 objects.
+	    xhr.open(method, url, true);
+
+	  } else if (typeof XDomainRequest != "undefined") {
+
+	    // Otherwise, check if XDomainRequest.
+	    // XDomainRequest only exists in IE, and is IE's way of making CORS requests.
+	    xhr = new XDomainRequest();
+	    xhr.open(method, url);
+
+	  } else {
+
+	    // Otherwise, CORS is not supported by the browser.
+	    xhr = null;
+
+	  }
+	  return xhr;
+	}
+
+	</script>
+
+
   <style>
   body {
       position: relative;
@@ -36,6 +97,202 @@
   </style>
 </head>
 <body onload="LoadedFuntion();" data-spy="scroll" data-target=".navbar" data-offset="50">
+
+	<script>
+
+
+
+	function dragEnter (ev) {
+		console.log("dragEnter..");
+	}
+
+ 
+	function dragLeave (ev) {
+		console.log("dragLeave..");
+	}
+
+	function drop(ev) {
+		alert("drop");
+	    console.log(ev);
+	    ev.preventDefault();
+	    
+	    var imageid = ev.dataTransfer.getData("text");
+
+	    console.log("dragged image id : " + imageid);
+	    
+	    console.log( $("#badge_count")[0].innerHTML );
+	    var count = parseInt( $("#badge_count")[0].innerHTML );
+	    
+	    $("#badge_count")[0].innerHTML = (count + 1);
+	    
+	    console.log( $("#badge_count")[0].innerHTML );
+
+	    console.log("Cancel dooted border...");
+		var id = document.getElementById('cartIcon');
+		//id.style.border = '5px dotted white'; 
+
+		console.log("drag...");
+	}
+
+	function allowDrop(event) {
+	    console.log("allowDrop(...);");	
+	    //alert("allowDrop");
+		event.preventDefault();
+	}
+
+	function LoadedFuntion() {
+		///////////////////////////////////////
+		if (typeof console === "undefined") {
+			alert("undefined console");
+		} else {
+			//console.log("submit");
+		}
+		// TextPart
+	          			
+		var successful = false;
+		var allCategories = null;
+
+		// display cart
+		$.support.cors = true;
+		
+		<!-- category http://localhost:8080/SpringCart/category/ -->
+		$.ajax({
+
+			url: "/SpringCart/category/"
+
+		}).then(function(categories) {
+			//alert("1: categories : " + categories);
+			allCategories = categories;
+			// jsonCallback( data );
+		    // alert("categories : "  + allCategories );
+		}).then(function(data) {
+
+			$.ajax({
+				url: "/SpringCart/product/"
+			}).then(function(allProducts) {
+				alert("categories : " + allCategories + "\n\nproducts : " + allProducts);
+				
+				displayProducts(allProducts,allCategories);
+				successful = true;
+			});
+		
+		});
+				
+		///////////////////////////////////////
+
+
+		
+		$.support.cors = true;
+		$.ajax({
+
+			url: "/SpringCart/product/"
+
+		}).then(function(data) {
+
+			jsonCallback( data );
+			
+			successful = true;
+		   
+		}).then(function (data) {
+			//alert(data);
+			/*
+			if(typeof console === "undefined") {
+				;
+			} else {
+				console.log("done! " + data);
+			}
+			*/
+		});
+	}
+
+	function displayProducts(allProducts,allCategories) {
+		// console.log("displayProducts( '" + products +  "','" + allCategories + "');");
+		// console.log( products );
+		// console.log( typeof products );
+		
+		if (typeof allProducts == "string" ) {
+			allProducts = JSON.parse(allProducts);
+		}
+		
+		if (typeof allCategories == "string" ) {
+			allCategories = JSON.parse(allCategories);
+		}
+		
+		// console.log( allCategories );
+		for ( var c in allCategories) {
+			console.log("Category:" + allCategories[c]);
+		}
+		
+		for (i in allCategories) {
+			var type = allCategories[i];
+			console.log("TYPE");
+			console.log("TYPE");
+			console.log("TYPE:" + type);
+			console.log("TYPE");
+			console.log("TYPE");
+			for ( var p in allProducts.products) {
+				if (type == allProducts.products[p].ProductType) {
+					console.log("Product:" + JSON.stringify( allProducts.products[p]) ) ;				
+				//} else {
+				//	console.log("\n\n\nUNKNOWMN:" + JSON.stringify( allProducts.products[p] ) ) ;				
+				}
+			}
+		}
+		//console.log( allProducts );
+	  // display all products in <CategoriesContainer>
+		// CategoriesContainer
+
+	}
+
+
+	function jsonCallback( data ) {
+		var json = null;
+		if ((typeof data) === "string") {
+			//console.log( "TYPE:" + (typeof data) );
+			//console.log( "DATA:" + data );		
+			json = JSON.parse(data);
+			//console.log( json );
+			//console.log( json.products );
+			
+
+		    var l = $("#productList")[0];
+	    
+	        //console.log(  1  ); 
+	      
+	        //console.log(   $('ul li')  ); 
+			
+			for (var i in json.products ) {
+				// console.log( "products["+i+"] : " + JSON.stringify( json.products[i] ) );
+		//		console.log( JSON.stringify( json.products[i].ProductName ) );
+		//		console.log( JSON.stringify( json.products[i].ProductURL ) );
+				// ProductURL
+			}
+			
+		}
+		
+	}
+
+function dragEvent( event ) {
+	// clear border
+	console.log( "dragEvent ... clear border");
+
+	var id = document.getElementById('cartIcon');
+    id.style.border = '5px dotted yellow'; 
+
+	//toggle dotted line
+	/*
+	if (id.style.border == '5px dotted red')
+			id.style.border = '0px dotted red'; 		
+	else
+			id.style.border = '5px dotted red'; 
+
+	console.log( id.style.border ); 
+	*/    
+}
+
+	</script>
+
+
 
 <div class="container-fluid" style="background-color:#F44336;color:#fff;height:200px;">
   <h1>Shopping Cart</h1>
@@ -78,11 +335,14 @@
         
           <li>
 
-             <a href=""  ondrop="drop(event)" ondragover="allowDrop(event)">
-             
-             
-                     
-             
+             <!--
+              <a href="" id='cartIcon' style="border-style: dashed" ondrop="drop(event)" ondragover="allowDrop(event)">
+             -->
+             <a href="" id='cartIcon' style="border: 5px dotted #333333"; 
+                ondrop="dragEvent(event);"
+                ondragleave="dragLeave(event);"
+                ondragenter="dragEnter(event);"
+                ondragover="allowDrop(event)">
              	<span class="glyphicon glyphicon-shopping-cart" ></span>
 	            Cart
 	            <span id='badge_count' class="badge">0</span>
@@ -92,8 +352,12 @@
           </li>
           <li>
 
-             <a href="javascript:alert('check out');">
-             
+             <a href="" id='cartIcon' style="border-style: none"
+                ondrop="dragEvent(event);"
+                ondragleave="dragLeave(event);"
+                ondragenter="dragEnter(event);"
+                ondragover="allowDrop(event)">
+
              	<span class="glyphicon glyphicon glyphicon-credit-card" data-toggle="modal" data-target="#myModal"></span>
 	            Checkout
 
@@ -121,19 +385,28 @@
 	  
 	  <li class="span4">
 	    <a href="#" class="thumbnail">	      
-	      <img id="image1" class="img-rounded" draggable="true" ondragstart="drag(event)" 
+	      <img id="image1" class="img-rounded" draggable="true" 
+
+	        ondragstart="dragstart_handler(event);" ondragend="dragend_handler(event);"
+
 	        src="https://images-na.ssl-images-amazon.com/images/I/51uAySJJF%2BL._PJStripe-Prime-Only-500px,TopLeft,0,0._AC_SY200_.jpg" alt=""> 
 	    </a>
 	  </li>
 	  <li class="span4">
 	    <a href="#" class="thumbnail">
-	      <img id="image2" class="img-rounded" draggable="true" ondragstart="drag(event)" 
+	      <img id="image2" class="img-rounded" draggable="true" 
+
+	        ondragstart="dragstart_handler(event);" ondragend="dragend_handler(event);"
+
 	        src="https://images-na.ssl-images-amazon.com/images/I/51uAySJJF%2BL._PJStripe-Prime-Only-500px,TopLeft,0,0._AC_SY200_.jpg" alt="">
 	    </a>
 	  </li>
 	  <li class="span4">
 	    <a href="#" class="thumbnail">
-	      <img id="image3" class="img-rounded" draggable="true" ondragstart="drag(event)" 
+	      <img id="image3" class="img-rounded" draggable="true" 
+
+	        ondragstart="dragstart_handler(event);" ondragend="dragend_handler(event);"
+
 	       src="https://images-na.ssl-images-amazon.com/images/I/51uAySJJF%2BL._PJStripe-Prime-Only-500px,TopLeft,0,0._AC_SY200_.jpg" alt="">
 	    </a>
 	  </li>
@@ -181,203 +454,5 @@
   items:
 </div>
 
-<script>
-// using Cross-Origin Resource Sharing (CORS) 
-
-function handler( data )  {
-    console.log(data.type);
-}
-
-function createCORSRequest(method, url) {
-  var xhr = new XMLHttpRequest();
-  if ("withCredentials" in xhr) {
-
-    // Check if the XMLHttpRequest object has a "withCredentials" property.
-    // "withCredentials" only exists on XMLHTTPRequest2 objects.
-    xhr.open(method, url, true);
-
-  } else if (typeof XDomainRequest != "undefined") {
-
-    // Otherwise, check if XDomainRequest.
-    // XDomainRequest only exists in IE, and is IE's way of making CORS requests.
-    xhr = new XDomainRequest();
-    xhr.open(method, url);
-
-  } else {
-
-    // Otherwise, CORS is not supported by the browser.
-    xhr = null;
-
-  }
-  return xhr;
-}
-
-function LoadedFuntion() {
-	///////////////////////////////////////
-	if (typeof console === "undefined") {
-		alert("undefined console");
-	} else {
-		//console.log("submit");
-	}
-	// TextPart
-          			
-	var successful = false;
-	var allCategories = null;
-
-	// display cart
-	$.support.cors = true;
-	
-	<!-- category http://localhost:8080/SpringCart/category/ -->
-	$.ajax({
-
-		url: "/SpringCart/category/"
-
-	}).then(function(categories) {
-		//alert("1: categories : " + categories);
-		allCategories = categories;
-		// jsonCallback( data );
-	    // alert("categories : "  + allCategories );
-	}).then(function(data) {
-
-		$.ajax({
-			url: "/SpringCart/product/"
-		}).then(function(allProducts) {
-			alert("categories : " + allCategories + "\n\nproducts : " + allProducts);
-			
-			displayProducts(allProducts,allCategories);
-			successful = true;
-		});
-	
-	});
-			
-	///////////////////////////////////////
-
-
-	
-	$.support.cors = true;
-	$.ajax({
-
-		url: "/SpringCart/product/"
-
-	}).then(function(data) {
-
-		jsonCallback( data );
-		
-		successful = true;
-	   
-	}).then(function (data) {
-		//alert(data);
-		/*
-		if(typeof console === "undefined") {
-			;
-		} else {
-			console.log("done! " + data);
-		}
-		*/
-	});
-}
-
-function displayProducts(allProducts,allCategories) {
-	// console.log("displayProducts( '" + products +  "','" + allCategories + "');");
-	// console.log( products );
-	// console.log( typeof products );
-	
-	if (typeof allProducts == "string" ) {
-		allProducts = JSON.parse(allProducts);
-	}
-	
-	if (typeof allCategories == "string" ) {
-		allCategories = JSON.parse(allCategories);
-	}
-	
-	// console.log( allCategories );
-	for ( var c in allCategories) {
-		console.log("Category:" + allCategories[c]);
-	}
-	
-	for (i in allCategories) {
-		var type = allCategories[i];
-		console.log("TYPE");
-		console.log("TYPE");
-		console.log("TYPE:" + type);
-		console.log("TYPE");
-		console.log("TYPE");
-		for ( var p in allProducts.products) {
-			if (type == allProducts.products[p].ProductType) {
-				console.log("Product:" + JSON.stringify( allProducts.products[p]) ) ;				
-			//} else {
-			//	console.log("\n\n\nUNKNOWMN:" + JSON.stringify( allProducts.products[p] ) ) ;				
-			}
-		}
-	}
-	//console.log( allProducts );
-  // display all products in <CategoriesContainer>
-	// CategoriesContainer
-
-}
-
-
-function jsonCallback( data ) {
-	var json = null;
-	if ((typeof data) === "string") {
-		//console.log( "TYPE:" + (typeof data) );
-		//console.log( "DATA:" + data );		
-		json = JSON.parse(data);
-		//console.log( json );
-		//console.log( json.products );
-		
-
-	    var l = $("#productList")[0];
-    
-        //console.log(  1  ); 
-      
-        //console.log(   $('ul li')  ); 
-		
-		for (var i in json.products ) {
-			// console.log( "products["+i+"] : " + JSON.stringify( json.products[i] ) );
-	//		console.log( JSON.stringify( json.products[i].ProductName ) );
-	//		console.log( JSON.stringify( json.products[i].ProductURL ) );
-			// ProductURL
-		}
-		
-	}
-	
-}
-
-function drag(event) {
-    console.log("drag(...);");	
-    console.log(event);	
-    
-    event.dataTransfer.setData("text", event.target.id);
-} 
-
-function drop(ev) {
-	
-    console.log(ev);
-    ev.preventDefault();
-    
-    var imageid = ev.dataTransfer.getData("text");
-
-    console.log("dragged image id : " + imageid);
-    
-    console.log( $("#badge_count")[0].innerHTML );
-    var count = parseInt( $("#badge_count")[0].innerHTML );
-    
-    $("#badge_count")[0].innerHTML = (count + 1);
-    
-    console.log( $("#badge_count")[0].innerHTML );
-    //badge_count
-    //ev.target.appendChild(document.getElementById(data));
-        
-}
-
-function allowDrop(event) {
-    //console.log("allowDrop(...);");	
-    //alert("allowDrop");
-	event.preventDefault();
-}
-
-</script>
 </body>
 </html>
-
