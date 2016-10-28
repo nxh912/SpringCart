@@ -5,7 +5,6 @@ import java.util.Iterator;
 
 public class Cart {
 	private int cartId;
-	private float cartTotal;
 	private ArrayList<LineItem> lineItems;
 	
 	public Cart(int cartId) {
@@ -16,7 +15,7 @@ public class Cart {
 		return this.cartId;
 	}
 	
-	public float getCartTotal() {
+	public int getCartTotal() {
 		// Return cart total
 		return this.lineItems.size();
 	}

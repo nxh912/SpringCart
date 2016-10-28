@@ -6,15 +6,23 @@ import java.util.Iterator;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.springcart.model.Cart;
 import com.springcart.model.LineItem;
 import com.springcart.model.MyProduct;
+import com.springcart.serializer.CartSerializer;
 
 @RestController
 @RequestMapping("/cart")
@@ -35,9 +43,35 @@ public class CartController {
 	
 	// Returns the contents of the cart
 	@RequestMapping(value="/", method = RequestMethod.GET)
+	public ResponseEntity<String> getCartContentsCustom() {
+		ObjectMapper mapper = new ObjectMapper();
+		SimpleModule module = new SimpleModule();
+		HttpHeaders headers;
+		String serialized = "";
+		
+		module.addSerializer(Cart.class, new CartSerializer());
+		mapper.registerModule(module);
+
+		headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
+		try {
+			serialized = mapper.writeValueAsString(this.cart);
+
+			return new ResponseEntity<String>(serialized, headers, HttpStatus.OK);
+		}
+		catch (JsonProcessingException je) {
+			System.out.println("Problem processing JSON");
+			serialized = je.getMessage();
+			return new ResponseEntity<String>(serialized, headers, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	/*
+	@RequestMapping(value="/", method = RequestMethod.GET)
 	public Cart getCartContents() {
 		return this.cart;
-	}	
+	}
+	*/
 	
 	// Clears the content of the cart
 	@RequestMapping(value="/", method = RequestMethod.DELETE)

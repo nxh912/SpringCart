@@ -33,6 +33,7 @@ public class CategoryController {
 				default: break;
 			}
 			//newCategory.setCategoryName("Category " + count);
+			//newCategory.setProductCount(0);
 			this.allCategories.add(newCategory);
 		}
 		
